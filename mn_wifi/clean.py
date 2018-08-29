@@ -13,7 +13,7 @@ import os
 import glob
 
 from mininet.log import info
-from mininet.clean import killprocs, sh
+from mininet.clean import killprocs, sh, Cleanup as wired_cleanup
 from mn_wifi.sixLoWPAN.clean import Cleanup as sixlowpan
 
 class Cleanup(object):
@@ -21,6 +21,8 @@ class Cleanup(object):
 
     @classmethod
     def cleanup_wifi(cls):
+        wired_cleanup.cleanup(cls)
+        Cleanup.NDN_cleanup(cls)
         """Clean up junk which might be left over from old runs;
            do fast stuff before slow dp and link removal!"""
 
@@ -58,5 +60,15 @@ class Cleanup(object):
         sh('pkill wmediumd')
 
         sixlowpan.cleanup_6lowpan()
+
+    @classmethod
+    def NDN_cleanup(cls):
+        program_list = ("nfd", "minindn")
+        for program in program_list:
+            try:
+                print("*** Killing {}\n".format(program))
+                co("pkill -9 {}".format(program))
+            except:
+                pass
 
 cleanup_wifi = Cleanup.cleanup_wifi
