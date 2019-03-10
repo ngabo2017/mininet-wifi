@@ -96,4 +96,5 @@ def topology():
 
 if __name__ == '__main__':
     setLogLevel('info')
+    ptint("你好")
     topology()
